@@ -1,0 +1,9 @@
+{
+	"name": "dev-demo-ind",
+	"location": "centralindia",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "66c9245c-0c5d-46ea-a0df-8a962d6f8585",
+		"tenantId": "1152be17-06a4-49a3-be60-9d2887c61186"
+	}
+}

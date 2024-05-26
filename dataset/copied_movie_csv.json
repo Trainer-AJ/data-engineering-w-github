@@ -1,0 +1,29 @@
+{
+	"name": "copied_movie_csv",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "adls_azure",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"filepath": {
+					"value": "@concat('parameter','/','demo1')\n",
+					"type": "Expression"
+				}
+			}
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": {
+					"value": "@concat('parameter','/','demo1','/',utcNow('yyyy'),'/',formatDateTime(utcNow(),'MM'),'/',utcNow('dd'))\n",
+					"type": "Expression"
+				},
+				"fileSystem": "csv"
+			}
+		},
+		"schema": {}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

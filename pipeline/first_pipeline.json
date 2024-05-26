@@ -1,0 +1,400 @@
+{
+	"name": "first_pipeline",
+	"properties": {
+		"activities": [
+			{
+				"name": "from-raw-to-copied",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "parameter-demo",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "JsonSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "JsonWriteSettings"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "Film",
+									"type": "String"
+								},
+								"sink": {
+									"path": "$['Film']"
+								}
+							},
+							{
+								"source": {
+									"name": "Genre",
+									"type": "String"
+								},
+								"sink": {
+									"path": "$['Genre']"
+								}
+							},
+							{
+								"source": {
+									"name": "Lead Studio",
+									"type": "String"
+								},
+								"sink": {
+									"path": "$['Lead Studio']"
+								}
+							},
+							{
+								"source": {
+									"name": "Audience score %",
+									"type": "String"
+								},
+								"sink": {
+									"path": "$['Audience score %']"
+								}
+							},
+							{
+								"source": {
+									"name": "Profitability",
+									"type": "String"
+								},
+								"sink": {
+									"path": "$['Profitability']"
+								}
+							},
+							{
+								"source": {
+									"name": "Rotten Tomatoes %",
+									"type": "String"
+								},
+								"sink": {
+									"path": "$['Rotten Tomatoes %']"
+								}
+							},
+							{
+								"source": {
+									"name": "Worldwide Gross",
+									"type": "String"
+								},
+								"sink": {
+									"path": "$['Worldwide Gross']"
+								}
+							},
+							{
+								"source": {
+									"name": "Year",
+									"type": "String"
+								},
+								"sink": {
+									"path": "$['Year']"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "movies_csv",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "copied_movie_csv",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "parameter-demo",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "TodaysDate",
+						"dependencyConditions": [
+							"Skipped",
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "JsonSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "JsonWriteSettings"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "Film",
+									"type": "String"
+								},
+								"sink": {
+									"path": "$['Film']"
+								}
+							},
+							{
+								"source": {
+									"name": "Genre",
+									"type": "String"
+								},
+								"sink": {
+									"path": "$['Genre']"
+								}
+							},
+							{
+								"source": {
+									"name": "Lead Studio",
+									"type": "String"
+								},
+								"sink": {
+									"path": "$['Lead Studio']"
+								}
+							},
+							{
+								"source": {
+									"name": "Audience score %",
+									"type": "String"
+								},
+								"sink": {
+									"path": "$['Audience score %']"
+								}
+							},
+							{
+								"source": {
+									"name": "Profitability",
+									"type": "String"
+								},
+								"sink": {
+									"path": "$['Profitability']"
+								}
+							},
+							{
+								"source": {
+									"name": "Rotten Tomatoes %",
+									"type": "String"
+								},
+								"sink": {
+									"path": "$['Rotten Tomatoes %']"
+								}
+							},
+							{
+								"source": {
+									"name": "Worldwide Gross",
+									"type": "String"
+								},
+								"sink": {
+									"path": "$['Worldwide Gross']"
+								}
+							},
+							{
+								"source": {
+									"name": "Year",
+									"type": "String"
+								},
+								"sink": {
+									"path": "$['Year']"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "movies_csv",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "copied_movie_csv",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "TodaysDate",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "JsonSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "JsonWriteSettings"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "Film",
+									"type": "String"
+								},
+								"sink": {
+									"path": "$['Film']"
+								}
+							},
+							{
+								"source": {
+									"name": "Genre",
+									"type": "String"
+								},
+								"sink": {
+									"path": "$['Genre']"
+								}
+							},
+							{
+								"source": {
+									"name": "Lead Studio",
+									"type": "String"
+								},
+								"sink": {
+									"path": "$['Lead Studio']"
+								}
+							},
+							{
+								"source": {
+									"name": "Audience score %",
+									"type": "String"
+								},
+								"sink": {
+									"path": "$['Audience score %']"
+								}
+							},
+							{
+								"source": {
+									"name": "Profitability",
+									"type": "String"
+								},
+								"sink": {
+									"path": "$['Profitability']"
+								}
+							},
+							{
+								"source": {
+									"name": "Rotten Tomatoes %",
+									"type": "String"
+								},
+								"sink": {
+									"path": "$['Rotten Tomatoes %']"
+								}
+							},
+							{
+								"source": {
+									"name": "Worldwide Gross",
+									"type": "String"
+								},
+								"sink": {
+									"path": "$['Worldwide Gross']"
+								}
+							},
+							{
+								"source": {
+									"name": "Year",
+									"type": "String"
+								},
+								"sink": {
+									"path": "$['Year']"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "movies_csv",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "copied_movie_csv",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2024-05-25T17:07:03Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}
