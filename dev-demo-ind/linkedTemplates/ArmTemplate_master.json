@@ -1,0 +1,112 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "dev-demo-ind"
+		},
+		"adls_azure_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'adls_azure'"
+		},
+		"sql_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'sql'"
+		},
+		"sql_75_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'sql_75'"
+		},
+		"adls_azure_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://inddatasourceadls.dfs.core.windows.net/"
+		},
+		"sql_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "hgftgd.database.windows.net"
+		},
+		"sql_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "tdr"
+		},
+		"sql_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "aj"
+		},
+		"sql_75_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "hgftgd.database.windows.net"
+		},
+		"sql_75_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "tdr"
+		},
+		"sql_75_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "aj"
+		},
+		"containerUri": {
+			"type": "string",
+			"metadata": "URI to storage account containing linked ARM templates"
+		},
+		"containerSasToken": {
+			"type": "string",
+			"metadata": "Sas token to storage account containing linked ARM templates"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "dev-demo-ind_ArmTemplate_0",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_0.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"adls_azure_accountKey": {
+						"value": "[parameters('adls_azure_accountKey')]"
+					},
+					"sql_password": {
+						"value": "[parameters('sql_password')]"
+					},
+					"sql_75_password": {
+						"value": "[parameters('sql_75_password')]"
+					},
+					"adls_azure_properties_typeProperties_url": {
+						"value": "[parameters('adls_azure_properties_typeProperties_url')]"
+					},
+					"sql_properties_typeProperties_server": {
+						"value": "[parameters('sql_properties_typeProperties_server')]"
+					},
+					"sql_properties_typeProperties_database": {
+						"value": "[parameters('sql_properties_typeProperties_database')]"
+					},
+					"sql_properties_typeProperties_userName": {
+						"value": "[parameters('sql_properties_typeProperties_userName')]"
+					},
+					"sql_75_properties_typeProperties_server": {
+						"value": "[parameters('sql_75_properties_typeProperties_server')]"
+					},
+					"sql_75_properties_typeProperties_database": {
+						"value": "[parameters('sql_75_properties_typeProperties_database')]"
+					},
+					"sql_75_properties_typeProperties_userName": {
+						"value": "[parameters('sql_75_properties_typeProperties_userName')]"
+					}
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}

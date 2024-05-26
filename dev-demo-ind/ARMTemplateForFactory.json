@@ -1,0 +1,877 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "dev-demo-ind"
+		},
+		"adls_azure_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'adls_azure'"
+		},
+		"sql_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'sql'"
+		},
+		"sql_75_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'sql_75'"
+		},
+		"adls_azure_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://inddatasourceadls.dfs.core.windows.net/"
+		},
+		"sql_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "hgftgd.database.windows.net"
+		},
+		"sql_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "tdr"
+		},
+		"sql_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "aj"
+		},
+		"sql_75_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "hgftgd.database.windows.net"
+		},
+		"sql_75_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "tdr"
+		},
+		"sql_75_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "aj"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/first_pipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "from-raw-to-copied",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "parameter-demo",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "JsonSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "JsonWriteSettings"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "Film",
+											"type": "String"
+										},
+										"sink": {
+											"path": "$['Film']"
+										}
+									},
+									{
+										"source": {
+											"name": "Genre",
+											"type": "String"
+										},
+										"sink": {
+											"path": "$['Genre']"
+										}
+									},
+									{
+										"source": {
+											"name": "Lead Studio",
+											"type": "String"
+										},
+										"sink": {
+											"path": "$['Lead Studio']"
+										}
+									},
+									{
+										"source": {
+											"name": "Audience score %",
+											"type": "String"
+										},
+										"sink": {
+											"path": "$['Audience score %']"
+										}
+									},
+									{
+										"source": {
+											"name": "Profitability",
+											"type": "String"
+										},
+										"sink": {
+											"path": "$['Profitability']"
+										}
+									},
+									{
+										"source": {
+											"name": "Rotten Tomatoes %",
+											"type": "String"
+										},
+										"sink": {
+											"path": "$['Rotten Tomatoes %']"
+										}
+									},
+									{
+										"source": {
+											"name": "Worldwide Gross",
+											"type": "String"
+										},
+										"sink": {
+											"path": "$['Worldwide Gross']"
+										}
+									},
+									{
+										"source": {
+											"name": "Year",
+											"type": "String"
+										},
+										"sink": {
+											"path": "$['Year']"
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "movies_csv",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "copied_movie_csv",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "parameter-demo",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "TodaysDate",
+								"dependencyConditions": [
+									"Skipped",
+									"Failed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "JsonSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "JsonWriteSettings"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "Film",
+											"type": "String"
+										},
+										"sink": {
+											"path": "$['Film']"
+										}
+									},
+									{
+										"source": {
+											"name": "Genre",
+											"type": "String"
+										},
+										"sink": {
+											"path": "$['Genre']"
+										}
+									},
+									{
+										"source": {
+											"name": "Lead Studio",
+											"type": "String"
+										},
+										"sink": {
+											"path": "$['Lead Studio']"
+										}
+									},
+									{
+										"source": {
+											"name": "Audience score %",
+											"type": "String"
+										},
+										"sink": {
+											"path": "$['Audience score %']"
+										}
+									},
+									{
+										"source": {
+											"name": "Profitability",
+											"type": "String"
+										},
+										"sink": {
+											"path": "$['Profitability']"
+										}
+									},
+									{
+										"source": {
+											"name": "Rotten Tomatoes %",
+											"type": "String"
+										},
+										"sink": {
+											"path": "$['Rotten Tomatoes %']"
+										}
+									},
+									{
+										"source": {
+											"name": "Worldwide Gross",
+											"type": "String"
+										},
+										"sink": {
+											"path": "$['Worldwide Gross']"
+										}
+									},
+									{
+										"source": {
+											"name": "Year",
+											"type": "String"
+										},
+										"sink": {
+											"path": "$['Year']"
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "movies_csv",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "copied_movie_csv",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "TodaysDate",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "JsonSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "JsonWriteSettings"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "Film",
+											"type": "String"
+										},
+										"sink": {
+											"path": "$['Film']"
+										}
+									},
+									{
+										"source": {
+											"name": "Genre",
+											"type": "String"
+										},
+										"sink": {
+											"path": "$['Genre']"
+										}
+									},
+									{
+										"source": {
+											"name": "Lead Studio",
+											"type": "String"
+										},
+										"sink": {
+											"path": "$['Lead Studio']"
+										}
+									},
+									{
+										"source": {
+											"name": "Audience score %",
+											"type": "String"
+										},
+										"sink": {
+											"path": "$['Audience score %']"
+										}
+									},
+									{
+										"source": {
+											"name": "Profitability",
+											"type": "String"
+										},
+										"sink": {
+											"path": "$['Profitability']"
+										}
+									},
+									{
+										"source": {
+											"name": "Rotten Tomatoes %",
+											"type": "String"
+										},
+										"sink": {
+											"path": "$['Rotten Tomatoes %']"
+										}
+									},
+									{
+										"source": {
+											"name": "Worldwide Gross",
+											"type": "String"
+										},
+										"sink": {
+											"path": "$['Worldwide Gross']"
+										}
+									},
+									{
+										"source": {
+											"name": "Year",
+											"type": "String"
+										},
+										"sink": {
+											"path": "$['Year']"
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "movies_csv",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "copied_movie_csv",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2024-05-25T17:07:03Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/movies_csv')]",
+				"[concat(variables('factoryId'), '/datasets/copied_movie_csv')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/copied_movie_csv')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "adls_azure",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"filepath": {
+							"value": "@concat('parameter','/','demo1')\n",
+							"type": "Expression"
+						}
+					}
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": {
+							"value": "@concat('parameter','/','demo1','/',utcNow('yyyy'),'/',formatDateTime(utcNow(),'MM'),'/',utcNow('dd'))\n",
+							"type": "Expression"
+						},
+						"fileSystem": "csv"
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/adls_azure')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/movies_csv')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "adls_azure",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"filepath": "parameter"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "movies.csv",
+						"folderPath": "raw-data",
+						"fileSystem": "csv"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Film",
+						"type": "String"
+					},
+					{
+						"name": "Genre",
+						"type": "String"
+					},
+					{
+						"name": "Lead Studio",
+						"type": "String"
+					},
+					{
+						"name": "Audience score %",
+						"type": "String"
+					},
+					{
+						"name": "Profitability",
+						"type": "String"
+					},
+					{
+						"name": "Rotten Tomatoes %",
+						"type": "String"
+					},
+					{
+						"name": "Worldwide Gross",
+						"type": "String"
+					},
+					{
+						"name": "Year",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/adls_azure')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/parameter')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "adls_azure",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"filepath": "parameter"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileSystem": "csv"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Film",
+						"type": "String"
+					},
+					{
+						"name": "Genre",
+						"type": "String"
+					},
+					{
+						"name": "Lead Studio",
+						"type": "String"
+					},
+					{
+						"name": "Audience score %",
+						"type": "String"
+					},
+					{
+						"name": "Profitability",
+						"type": "String"
+					},
+					{
+						"name": "Rotten Tomatoes %",
+						"type": "String"
+					},
+					{
+						"name": "Worldwide Gross",
+						"type": "String"
+					},
+					{
+						"name": "Year",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/adls_azure')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/sql_customer')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "sql",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "CustomerID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "FirstName",
+						"type": "varchar"
+					},
+					{
+						"name": "LastName",
+						"type": "varchar"
+					},
+					{
+						"name": "Email",
+						"type": "varchar"
+					},
+					{
+						"name": "Phone",
+						"type": "varchar"
+					},
+					{
+						"name": "Address",
+						"type": "varchar"
+					},
+					{
+						"name": "City",
+						"type": "varchar"
+					},
+					{
+						"name": "State",
+						"type": "varchar"
+					},
+					{
+						"name": "ZipCode",
+						"type": "varchar"
+					},
+					{
+						"name": "Country",
+						"type": "varchar"
+					},
+					{
+						"name": "RegistrationDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "LastLogin",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "IsActive",
+						"type": "bit"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "Customers"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/sql')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/adls_azure')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('adls_azure_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('adls_azure_accountKey')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/sql')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"server": "[parameters('sql_properties_typeProperties_server')]",
+					"database": "[parameters('sql_properties_typeProperties_database')]",
+					"encrypt": "mandatory",
+					"trustServerCertificate": false,
+					"hostNameInCertificate": "",
+					"authenticationType": "SQL",
+					"userName": "[parameters('sql_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('sql_password')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/sql_75')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"server": "[parameters('sql_75_properties_typeProperties_server')]",
+					"database": "[parameters('sql_75_properties_typeProperties_database')]",
+					"encrypt": "mandatory",
+					"trustServerCertificate": false,
+					"hostNameInCertificate": "",
+					"authenticationType": "SQL",
+					"userName": "[parameters('sql_75_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('sql_75_password')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "after-github",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "movies_csv",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "github_csv",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/movies_csv')]",
+				"[concat(variables('factoryId'), '/datasets/github_csv')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/github_csv')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "adls_azure",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileSystem": "github"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/adls_azure')]"
+			]
+		}
+	]
+}
